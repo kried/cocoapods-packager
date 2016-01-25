@@ -17,7 +17,7 @@ module Symbols
 
     pod_libs.each do |pod_lib|
       pod_lib_name = pod_lib.match(/.*lib(.*).a/i).captures[0]
-      if ignore_mangle.include? pod_lib_name
+      if ignore_mangle and ignore_mangle.include? pod_lib_name
         puts "Ignoring #{pod_lib_name}"
       else
         syms = Symbols.symbols_from_library(pod_lib)
