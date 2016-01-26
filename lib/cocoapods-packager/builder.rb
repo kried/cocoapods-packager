@@ -141,6 +141,10 @@ module Pod
       defines = Symbols.mangle_for_pod_dependencies(@spec.name, @ignore_mangle, @static_sandbox_root)
       defines << " " << @spec.consumer(platform).compiler_flags.join(' ')
 
+      UI.puts "Mangled symbols defines:"
+
+      p defines
+
       UI.puts 'Building mangled framework'
       xcodebuild(defines, options)
       defines
