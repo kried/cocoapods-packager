@@ -7,7 +7,7 @@ module Symbols
   # 	- alias each symbol to Pod#{pod_name}_#{symbol}
   # 	- put defines into `GCC_PREPROCESSOR_DEFINITIONS` for passing to Xcode
   #
-  def mangle_for_pod_dependencies(pod_name, ignore_mangle, sandbox_root)
+  def mangle_for_pod_dependencies(pod_name, ignore_mangle_pods, ignore_mangle_syms, sandbox_root)
     pod_libs = Dir.glob("#{sandbox_root}/build/lib*.a").select do
       |file| file !~ /lib#{pod_name}.a$/
     end
@@ -17,10 +17,18 @@ module Symbols
 
     pod_libs.each do |pod_lib|
       pod_lib_name = pod_lib.match(/.*lib(.*).a/i).captures[0]
-      if ignore_mangle and ignore_mangle.include? pod_lib_name
-        puts "Ignoring #{pod_lib_name}"
+      if ignore_mangle_pods and ignore_mangle_pods.include? pod_lib_name
+        puts "Ignoring '#{pod_lib_name}' pod"
       else
-        syms = Symbols.symbols_from_library(pod_lib)
+        lib_syms = Symbols.symbols_from_library(pod_lib)
+        syms = []
+        lib_syms.each do |sym|
+          if ignore_mangle_syms and ignore_mangle_syms.include? sym
+            puts "Ignoring '#{sym}' symbol"
+          else
+            syms += [sym]
+          end
+        end
         all_syms += syms.map! { |sym| alias_symbol sym, pod_name }
       end
     end

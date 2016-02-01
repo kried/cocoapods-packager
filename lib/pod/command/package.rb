@@ -10,13 +10,14 @@ module Pod
 
       def self.options
         [
-          ['--force',         'Overwrite existing files.'],
-          ['--no-mangle',     'Do not mangle symbols of depedendant Pods.'],
-          ['--ignore-mangle', 'Do not mangle symbols of given Pods.'],
-          ['--embedded',      'Generate embedded frameworks.'],
-          ['--library',       'Generate static libraries.'],
-          ['--dynamic',       'Generate dynamic framework.'],
-          ['--subspecs',      'Only include the given subspecs'],
+          ['--force',               'Overwrite existing files.'],
+          ['--no-mangle',           'Do not mangle symbols of depedendant Pods.'],
+          ['--ignore-mangle-pods',  'Do not mangle symbols of given Pods.'],
+          ['--ignore-mangle-syms',  'Do not mangle given symbols.'],
+          ['--embedded',            'Generate embedded frameworks.'],
+          ['--library',             'Generate static libraries.'],
+          ['--dynamic',             'Generate dynamic framework.'],
+          ['--subspecs',            'Only include the given subspecs'],
           ['--spec-sources=private,https://github.com/CocoaPods/Specs.git', 'The sources to pull dependant ' \
             'pods from (defaults to https://github.com/CocoaPods/Specs.git)'],
         ]
@@ -32,8 +33,11 @@ module Pod
         @source = argv.shift_argument
         @spec_sources = argv.option('spec-sources', 'https://github.com/CocoaPods/Specs.git').split(',')
 
-        ignore_mangle = argv.option('ignore-mangle')
-        @ignore_mangle = ignore_mangle.split(',') unless ignore_mangle.nil?
+        ignore_mangle_pods = argv.option('ignore-mangle-pods')
+        @ignore_mangle_pods = ignore_mangle_pods.split(',') unless ignore_mangle_pods.nil?
+
+        ignore_mangle_syms = argv.option('ignore-mangle-syms')
+        @ignore_mangle_syms = ignore_mangle_syms.split(',') unless ignore_mangle_syms.nil?
 
         subspecs = argv.option('subspecs')
         @subspecs = subspecs.split(',') unless subspecs.nil?
@@ -143,7 +147,8 @@ module Pod
           @spec,
           @embedded,
           @mangle,
-          @ignore_mangle,
+          @ignore_mangle_pods,
+          @ignore_mangle_syms,
           @dynamic)
 
         builder.build(platform, @library)
