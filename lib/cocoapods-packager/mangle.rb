@@ -20,6 +20,7 @@ module Symbols
       if ignore_mangle_pods and ignore_mangle_pods.include? pod_lib_name
         puts "Ignoring '#{pod_lib_name}' pod"
       else
+        puts "Mangling '#{pod_lib_name}' pod"
         lib_syms = Symbols.symbols_from_library(pod_lib)
         syms = []
         lib_syms.each do |sym|
