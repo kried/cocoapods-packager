@@ -285,6 +285,9 @@ MAP
         #
         # See http://ruby-doc.org/core-1.9.3/Process.html#method-c-exit
         Process.exit
+      else
+        UI.puts command
+        UI.puts output
       end
     end
   end
