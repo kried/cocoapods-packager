@@ -1,5 +1,7 @@
 require 'tmpdir'
 module Pod
+  DONT_CODESIGN = true
+
   class Command
     class Package < Command
       self.summary = 'Package a podspec into a static library.'
@@ -12,6 +14,7 @@ module Pod
         [
           ['--force',     'Overwrite existing files.'],
           ['--no-mangle', 'Do not mangle symbols of depedendant Pods.'],
+          ['--ignore-mangle-syms', 'Do not mangle selected comma-separated list of symbols.'],
           ['--embedded',  'Generate embedded frameworks.'],
           ['--library',   'Generate static libraries.'],
           ['--dynamic',   'Generate dynamic framework.'],
@@ -35,6 +38,9 @@ module Pod
         @name = argv.shift_argument
         @source = argv.shift_argument
         @spec_sources = argv.option('spec-sources', 'https://github.com/CocoaPods/Specs.git').split(',')
+
+        ignore_mangle_syms = argv.option('ignore-mangle-syms')
+        @ignore_mangle_syms = ignore_mangle_syms.split(',') unless ignore_mangle_syms.nil?
 
         subspecs = argv.option('subspecs')
         @subspecs = subspecs.split(',') unless subspecs.nil?
@@ -147,6 +153,7 @@ module Pod
           @spec,
           @embedded,
           @mangle,
+          @ignore_mangle_syms,
           @dynamic,
           @config,
           @bundle_identifier,

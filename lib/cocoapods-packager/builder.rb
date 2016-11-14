@@ -1,6 +1,6 @@
 module Pod
   class Builder
-    def initialize(source_dir, static_sandbox_root, dynamic_sandbox_root, public_headers_root, spec, embedded, mangle, dynamic, config, bundle_identifier, exclude_deps)
+    def initialize(source_dir, static_sandbox_root, dynamic_sandbox_root, public_headers_root, spec, embedded, mangle, ignore_mangle_syms, dynamic, config, bundle_identifier, exclude_deps)
       @source_dir = source_dir
       @static_sandbox_root = static_sandbox_root
       @dynamic_sandbox_root = dynamic_sandbox_root
@@ -8,6 +8,7 @@ module Pod
       @spec = spec
       @embedded = embedded
       @mangle = mangle
+      @ignore_mangle_syms = ignore_mangle_syms
       @dynamic = dynamic
       @config = config
       @bundle_identifier = bundle_identifier
@@ -146,8 +147,11 @@ module Pod
 
     def build_with_mangling(platform, options)
       UI.puts 'Mangling symbols'
-      defines = Symbols.mangle_for_pod_dependencies(@spec.name, @static_sandbox_root)
+      defines = Symbols.mangle_for_pod_dependencies(@spec.name, @ignore_mangle_syms, @static_sandbox_root)
       defines << ' ' << @spec.consumer(platform).compiler_flags.join(' ')
+
+      UI.puts "Mangled symbols defines:"
+      p defines
 
       UI.puts 'Building mangled framework'
       xcodebuild(defines, options)
@@ -292,6 +296,9 @@ MAP
         #
         # See http://ruby-doc.org/core-1.9.3/Process.html#method-c-exit
         Process.exit
+      else
+        UI.puts command
+        UI.puts output
       end
     end
   end
