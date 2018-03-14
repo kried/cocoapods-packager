@@ -244,6 +244,7 @@ module Pod
             config.build_settings['HEADER_SEARCH_PATHS'] = "$(inherited) #{Dir.pwd}/Pods/Static/Headers/**"
             config.build_settings['USER_HEADER_SEARCH_PATHS'] = "$(inherited) #{Dir.pwd}/Pods/Static/Headers/**"
             config.build_settings['OTHER_LDFLAGS'] = '$(inherited) -ObjC'
+            config.build_settings['BITCODE_GENERATION_MODE'] = 'bitcode'
           end
           dynamic_project.save
         end
